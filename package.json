@@ -6,7 +6,8 @@
     "web": "budo ./web/index.js -l -o --title \"Ait REPL\" -- -g uglifyify -t brfs -t [ babelify --presets [ es2015 ] ] -t envify -t uglifyify",
     "squigglies": "ait-lang ./squigglies/source.ait",
     "neon-glaciers": "ait-lang ./neon-glaciers/source.ait",
-    "noises": "ait-lang ./noises/source.ait"
+    "noises": "ait-lang ./noises/source.ait",
+    "bundle": "browserify ./web/index.js -o bundle.js -t brfs -t [ babelify --presets [ es2015 ] ] -t uglifyify -g uglifyify"
   },
   "author": "Stian Møllersen",
   "license": "MIT",
