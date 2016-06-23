@@ -1,0 +1,5 @@
+hsl: "hsl(%s, %s%, %s%)" replace replace replace ;
+
+teal: 60 85 180 hsl ;
+black: 0 0 0 hsl ;
+white: 360 100 100 hsl ;

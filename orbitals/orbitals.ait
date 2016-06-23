@@ -1,0 +1,54 @@
+@load ait-canvas ;
+@load ./colors ;
+@load ./tupleops ;
+@load ./trig ;
+
+#Configuration
+ORBS: 500 ;
+pFRIEND: 0.03 ;
+rINITIAL: 1000 ;
+nTH: 2PI 1000 / ;
+
+#Colors
+BACKGROUND: white ;
+FOREGROUND: teal ;
+
+#Convenience consts
+2PI: PI 2 * ;
+
+#Canvas configuration
+halfWidth: <width 2 / ;
+halfHeight: <height 2 / ;
+topLeftCorner: halfWidth -1 * halfHeight  -1 * ;
+
+reposition: halfWidth halfHeight translate ;
+fillBackground: topLeftCorner <width <height fillRect ;
+
+canvasConfig:
+  2.5 lineWidth
+  1 globalAlpha
+  BACKGROUND fillStyle ;
+
+circle:
+  beginPath
+  5 0 2PI true arc
+  FOREGROUND fillStyle
+  fill ;
+
+addNnTHs: nTH * <+1 ;
+inc: 1 + ;
+
+#Initialize orbs
+orbs:
+  (rINITIAL 0)
+  0
+  [ dup [ addNnTHs dup 2carth circle ] dip inc ]
+  [ dup ORBS < ]
+  while
+  drop drop ;
+
+#Main
+canvasConfig
+reposition
+fillBackground
+orbs
