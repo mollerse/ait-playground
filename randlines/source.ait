@@ -1,0 +1,84 @@
+@load ait-canvas ;
+@load ./rbush ;
+@load ./vec2 ;
+
+LINE_LENGTH: 20 ;
+MAXLINES: <height LINE_LENGTH / <width * 1.5 * ;
+
+randomX: random <width * ;
+randomY: random <height * ;
+randomPoint: ( randomX randomY ) ;
+
+#( point -- angle )
+randomAngle:
+  dup 0>
+  <height 2 /
+  swap
+  -
+  5 *
+  [ 1> <width 2 / swap - ] dip
+  atan2 ;
+
+#( point angle -- newX )
+randomNextPointX:
+  0> swap
+  cos LINE_LENGTH *
+  + ;
+
+#( point angle -- newY )
+randomNextPointY:
+  1> swap
+  sin LINE_LENGTH *
+  + ;
+
+#( point -- newPoint )
+randomNextPoint:
+  dup randomAngle
+  [ randomNextPointX ] nullary
+  [ randomNextPointY ] dip
+  ( 0 0 )
+  <0 <1 ;
+
+#( -- line )
+newLine:
+  randomPoint
+  [ randomNextPoint ] nullary
+  ( 0 0 )
+  <0 <1 ;
+
+#( line -- bool )
+hasIntersecting:
+  dup bbox search
+  [ intersects ] some ;
+
+#( tree -- line tree)
+findNonIntersectingLine:
+  newLine
+  [ drop newLine ]
+  [ dup . dup hasIntersecting ]
+  while
+  dup bbox
+  [ insert ] unary ;
+
+#( tree -- tree )
+drawLine:
+  findNonIntersectingLine
+  beginPath
+  moveTo
+  lineTo
+  stroke ;
+
+fillBackground: 0 0 <width <height fillRect ;
+
+config:
+  0.25 lineWidth
+  "black" strokeStyle
+  "white" fillStyle ;
+
+config
+fillBackground
+tree
+0
+[ [ drawLine ] dip 1 + ]
+[ dup MAXLINES < ]
+while

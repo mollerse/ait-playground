@@ -9,7 +9,8 @@
   "dependencies": {
     "ait-browser": "github:mollerse/ait-browser",
     "ait-canvas": "github:mollerse/ait-canvas",
-    "ait-lang": "github:mollerse/ait-lang"
+    "ait-lang": "github:mollerse/ait-lang",
+    "rbush": "^1.4.3"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
