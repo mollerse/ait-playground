@@ -3,8 +3,8 @@ const fs = require('fs');
 const Browser = require('ait-lang/runtimes/browser');
 
 const runtime = Browser();
-runtime.loadWords(require('ait-canvas'));
-runtime.loadWords(require('ait-dom'));
+runtime.load(require('ait-canvas'));
+runtime.load(require('ait-browser'));
 runtime.setCanvasDimensions(500, 500);
 
 const source = document.createElement('textarea');

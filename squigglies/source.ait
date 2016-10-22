@@ -1,27 +1,29 @@
 @load ait-canvas ;
 @load ./trig ;
 @load ./colors ;
-@load ./tupleops ;
 
-topLeftCorner: <width -1 * 2 / <height  -1 * 2 / ;
+add2Y: [ dup X ] dip + withX ;
+add2X: [ dup Y ] dip + withY ;
 
-fillBackground: topLeftCorner <width <height fillRect ;
+topLeftCorner: canvasWidth -1 * 2 / canvasHeight -1 * 2 / ;
+
+fillBackground: topLeftCorner canvasWidth canvasHeight fillRect ;
 
 random2: dup [ - random * ] dip + ;
 random25: -25 25 random2 ;
 
 calcNextControlPoint:
-  random25 <+0
-  3 2rad <+1 ;
+  random25 add2Y
+  3 toRad add2X ;
 
 calcNextAlongCircle:
-  6 2rad <+1 ;
+  6 toRad add2X ;
 
 circle:
   beginPath
-  dup [ 2carth moveTo ] dip
-  [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ 2carth [ 2carth ] dip quadraticCurveTo ] dip ]
-  [ dup 1> 2 PI * 6 2rad - <= ]
+  dup [ toCarth moveTo ] dip
+  [ dup Y 2 PI * 6 toRad - <= ]
+  [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ toCarth [ toCarth ] dip quadraticCurveTo ] dip ]
   while
   drop
   closePath ;
@@ -31,13 +33,13 @@ pinkStroke: pink strokeStyle ;
 blueStroke: blue strokeStyle ;
 
 config:
-  <width 2 / <height 2 / translate
+  canvasWidth 2 / canvasHeight 2 / translate
   2.5 lineWidth
   1 globalAlpha
   black fillStyle ;
 
 config
 fillBackground
-( 175 0 ) tealStroke circle stroke
-( 125 0 ) pinkStroke circle stroke
-( 150 0 ) blueStroke circle stroke
+{ "x" 175 "y" 0 } circle tealStroke stroke
+{ "x" 125 "y" 0 } circle pinkStroke stroke
+{ "x" 150 "y" 0 } circle blueStroke stroke

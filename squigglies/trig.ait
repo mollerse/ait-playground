@@ -1,19 +1,26 @@
-2carthX:
-  dup 1> [ 0> ] dip cos * ;
+Y: "y" get ;
+X: "x" get ;
+origo: { "x" 0 "y" 0 } ;
+withKey: swap make with ;
+withX: "x" withKey ;
+withY: "y" withKey ;
 
-2carthY:
-  dup 1> [ 0> ] dip sin * ;
+toCarthX:
+  dup Y [ X ] dip cos * ;
 
-2carth: ( 0 0 ) [ dup 2carthX ] dip swap <0 [ 2carthY ] dip swap <1 ;
+toCarthY:
+  dup Y [ X ] dip sin * ;
 
-2polarR:
-  dup 0> dup * [ 1> dup * ] dip sqrt ;
+toCarth: origo [ dup toCarthX ] dip swap withX [ toCarthY ] dip swap withY ;
 
-2polarPhi:
-  dup 1> [ 0> ] dip atan2 ;
+toPolarR:
+  dup X dup * [ Y dup * ] dip sqrt ;
 
-2polar: ( 0 0 ) [ dup 2polarR ] dip swap <0 [ 2polarPhi ] dip swap <1 ;
+toPolarPhi:
+  dup Y [ X ] dip atan2 ;
 
-2rad: 180 / PI * ;
+toPolar: origo [ dup toPolarR ] dip swap withX [ toPolarPhi ] dip swap withY ;
 
-2deg: PI / 180 * ;
+toRad: 180 / PI * ;
+
+toDeg: PI / 180 * ;

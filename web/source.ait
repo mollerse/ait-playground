@@ -1,56 +1,59 @@
-hsl: "hsl(%s, %s%, %s%)" replace replace replace ;
-rgb: "rgb(%s, %s, %s)" replace replace replace ;
+hsl: "hsl(%s, %s%, %s%)" replace3 ;
 
 teal: 60 85 180 hsl ;
 black: 0 0 0 hsl ;
 pink: "#d36fc8" ;
 blue: "#2347e6" ;
 
+Y: "y" get ;
+X: "x" get ;
+origo: { "x" 0 "y" 0 } ;
+withKey: swap make with ;
+withX: "x" withKey ;
+withY: "y" withKey ;
 
-2carthX:
-  dup 1> [ 0> ] dip cos * ;
+toCarthX:
+  dup Y [ X ] dip cos * ;
 
-2carthY:
-  dup 1> [ 0> ] dip sin * ;
+toCarthY:
+  dup Y [ X ] dip sin * ;
 
-2carth: ( 0 0 ) [ dup 2carthX ] dip swap <0 [ 2carthY ] dip swap <1 ;
+toCarth: origo [ dup toCarthX ] dip swap withX [ toCarthY ] dip swap withY ;
 
-2polarR:
-  dup 0> dup * [ 1> dup * ] dip sqrt ;
+toPolarR:
+  dup X dup * [ Y dup * ] dip sqrt ;
 
-2polarPhi:
-  dup 1> [ 0> ] dip atan2 ;
+toPolarPhi:
+  dup Y [ X ] dip atan2 ;
 
-2polar: ( 0 0 ) [ dup 2polarR ] dip swap <0 [ 2polarPhi ] dip swap <1 ;
+toPolar: origo [ dup toPolarR ] dip swap withX [ toPolarPhi ] dip swap withY ;
 
-2rad: 180 / PI * ;
+toRad: 180 / PI * ;
 
 2deg: PI / 180 * ;
 
-<+0: [ dup 0> ] dip + <0 ;
-<+1: [ dup 1> ] dip + <1 ;
-<-0: [ dup 0> ] dip - <0 ;
-<-1: [ dup 1> ] dip - <1 ;
+add2Y: [ dup X ] dip + withX ;
+add2X: [ dup Y ] dip + withY ;
 
-topLeftCorner: <width -1 * 2 / <height  -1 * 2 / ;
+topLeftCorner: canvasWidth -1 * 2 / canvasHeight -1 * 2 / ;
 
-fillBackground: topLeftCorner <width <height fillRect ;
+fillBackground: topLeftCorner canvasWidth canvasHeight fillRect ;
 
 random2: dup [ - random * ] dip + ;
 random25: -25 25 random2 ;
 
 calcNextControlPoint:
-  random25 <+0
-  3 2rad <+1 ;
+  random25 add2Y
+  3 toRad add2X ;
 
 calcNextAlongCircle:
-  6 2rad <+1 ;
+  6 toRad add2X ;
 
 circle:
   beginPath
-  dup [ 2carth moveTo ] dip
-  [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ 2carth [ 2carth ] dip quadraticCurveTo ] dip ]
-  [ dup 1> 2 PI * 6 2rad - <= ]
+  dup [ toCarth moveTo ] dip
+  [ dup Y 2 PI * 6 toRad - <= ]
+  [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ toCarth [ toCarth ] dip quadraticCurveTo ] dip ]
   while
   drop
   closePath ;
@@ -60,14 +63,14 @@ pinkStroke: pink strokeStyle ;
 blueStroke: blue strokeStyle ;
 
 config:
-  <width 2 / <height 2 / translate
+  canvasWidth 2 / canvasHeight 2 / translate
   2.5 lineWidth
   0.5 globalAlpha
   black fillStyle ;
 
 config
 [ fillBackground
-  ( 175 0 ) circle tealStroke stroke unstack
-  ( 125 0 ) circle pinkStroke stroke unstack
-  ( 150 0 ) circle blueStroke stroke unstack ]
+  { "x" 175 "y" 0 } circle tealStroke stroke unstack
+  { "x" 125 "y" 0 } circle pinkStroke stroke unstack
+  { "x" 150 "y" 0 } circle blueStroke stroke unstack ]
 raf
