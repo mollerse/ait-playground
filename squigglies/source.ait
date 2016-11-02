@@ -2,10 +2,10 @@
 @load ./trig ;
 @load ./colors ;
 
-add2Y: [ dup X ] dip + withX ;
-add2X: [ dup Y ] dip + withY ;
+add2Y: [ dup Y ] dip + withY ;
+add2X: [ dup X ] dip + withX ;
 
-topLeftCorner: canvasWidth -1 * 2 / canvasHeight -1 * 2 / ;
+topLeftCorner: origo canvasWidth -1 * 2 / withX canvasHeight -1 * 2 / withY ;
 
 fillBackground: topLeftCorner canvasWidth canvasHeight fillRect ;
 
@@ -13,11 +13,11 @@ random2: dup [ - random * ] dip + ;
 random25: -25 25 random2 ;
 
 calcNextControlPoint:
-  random25 add2Y
-  3 toRad add2X ;
+  random25 add2X
+  3 toRad add2Y ;
 
 calcNextAlongCircle:
-  6 toRad add2X ;
+  6 toRad add2Y ;
 
 circle:
   beginPath
@@ -25,7 +25,7 @@ circle:
   [ dup Y 2 PI * 6 toRad - <= ]
   [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ toCarth [ toCarth ] dip quadraticCurveTo ] dip ]
   while
-  drop
+  pop
   closePath ;
 
 tealStroke: teal strokeStyle ;

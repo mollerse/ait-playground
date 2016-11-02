@@ -4,7 +4,7 @@ const Browser = require('ait-lang/runtimes/browser');
 
 const runtime = Browser();
 runtime.load(require('ait-canvas'));
-runtime.load(require('ait-browser'));
+runtime.load(require('ait-dom'));
 runtime.setCanvasDimensions(500, 500);
 
 const source = document.createElement('textarea');
