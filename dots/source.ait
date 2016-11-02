@@ -1,0 +1,68 @@
+origo: { "x" 0 "y" 0 } ;
+withKey: swap make with ;
+Y: "y" get ;
+X: "x" get ;
+withX: "x" withKey ;
+withY: "y" withKey ;
+DY: "dy" get ;
+DX: "dx" get ;
+withDX: "dx" withKey ;
+withDY: "dy" withKey ;
+COLOR: "color" get ;
+withColor: "color" withKey ;
+
+add2Y: [ dup Y ] dip + withY ;
+add2X: [ dup X ] dip + withX ;
+
+topLeftCorner: origo canvasWidth -1 * 2 / withX canvasHeight -1 * 2 / withY ;
+
+fillBackground: "black" fillStyle topLeftCorner canvasWidth canvasHeight fillRect ;
+
+
+
+random2: dup [ - random * ] dip + ;
+randomWidth: canvasWidth -1 * 2 / canvasWidth 2 / random2 ;
+randomVelocity: -2.5 2.5 random2 ;
+
+colorwheel: ["teal" "blue" "pink" "yellow"] ;
+randomColor: 0 colorwheel size random2 floor colorwheel at ;
+
+randomPoint: origo randomWidth withX ;
+randomPointWithVelocity: randomPoint randomVelocity withDY randomVelocity withDX ;
+randomPointWithVelocityAndColor: randomPointWithVelocity randomColor withColor ;
+
+dot:
+  beginPath
+  0 2 PI * true arc
+  fill
+  closePath ;
+
+smallDot: 1 dot ;
+smallRedDot: "red" fillStyle smallDot ;
+
+dots:
+  [] 0
+  [dup 500 <=]
+  [ [ randomPointWithVelocityAndColor swons ] dip 1 + ]
+  while
+  pop ;
+
+drawDots:
+  dup
+  "red" strokeStyle
+  [ dup COLOR fillStyle smallDot ] step ;
+
+moveDots: [ dup DY add2Y dup DX add2X ] map ;
+
+config:
+  canvasWidth 2 / canvasHeight 2 / translate
+  2.5 lineWidth
+  1 globalAlpha ;
+
+animate: 60 rAF ;
+
+config
+dots
+fillBackground
+0.25 globalAlpha
+[ drawDots moveDots ] animate
