@@ -55,7 +55,7 @@ circle:
   [ dup Y 2 PI * 6 toRad - <= ]
   [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ toCarth [ toCarth ] dip quadraticCurveTo ] dip ]
   while
-  drop
+  pop
   closePath ;
 
 tealStroke: teal strokeStyle ;
