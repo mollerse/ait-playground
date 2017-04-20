@@ -1,0 +1,93 @@
+X: 0 at ;
+Y: 1 at ;
+DY: 2 at ;
+SDY: 3 at ;
+.X: 0 ins ;
+.Y: 1 ins ;
+.DY: 2 ins ;
+.SDY: 3 ins ;
+
+randomPointWithVelocity:
+  []
+  negativeHalfWidth halfWidth random2 swappend
+  -5 5 random2 swappend
+  -0.2 0.2 random2 swappend
+  0 swappend ;
+
+halfWidth: canvasWidth 2 / ;
+negativeHalfWidth: halfWidth -1 * ;
+halfHeight: canvasHeight 2 / ;
+negativeHalfHeight: halfHeight -1 * ;
+
+topLeftCorner:
+  []
+  negativeHalfWidth swappend
+  negativeHalfHeight swappend ;
+
+randomFrom:
+  dup size 0 swap random2
+  floor
+  at
+  [ pop ] dip ;
+
+palette: [ "rgb(0,255,242)" "rgb(252,0,255)" "rgb(57,255,20)" ] ;
+randomColor : palette randomFrom ;
+
+randomStroke: randomColor strokeStyle ;
+noFill: "none" fillStyle ;
+
+fillBackground:
+  1 globalAlpha
+  "black" fillStyle
+  topLeftCorner canvasWidth canvasHeight fillRect ;
+
+points:
+  []
+  1000 [ randomPointWithVelocity swons ] times ;
+
+sortedPoints: points [ X ] sortBy ;
+
+drawPoints:
+  0.1 globalAlpha
+  beginPath
+  first moveTo
+  dup [ lineTo ] step
+  stroke
+  closePath ;
+
+moveFirstPoint:
+  Y [ DY ] dip + swap .Y
+  DY swap .SDY ;
+
+movePoint:
+  [ [ size 0 == ] dip swap ]
+  [ ]
+  [
+    [ last ] dip
+    [ SDY ] dip Y swap [ + ] dip .Y
+    [ SDY ] dip DY swap [ + ] dip .SDY
+    [ Y halfHeight 150 - > ] [ -0.2 0 random2 swap .DY ] [] ifte
+    [ Y negativeHalfHeight 150 + < ] [ 0 0.2 random2 swap .DY ] [] ifte
+    [ pop ] dip
+  ]
+  ifte
+  swappend ;
+
+movePoints:
+  first moveFirstPoint pop
+  [] [ movePoint ]
+  fold ;
+
+config:
+  canvasWidth 2 / canvasHeight 2 / translate
+  noFill
+  randomStroke
+  0.1 lineWidth
+  1 globalAlpha ;
+
+animate: 60 rAF ;
+
+config
+fillBackground
+sortedPoints
+[ drawPoints movePoints ] animate

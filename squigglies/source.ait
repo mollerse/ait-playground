@@ -2,14 +2,24 @@
 @load ./trig ;
 @load ./colors ;
 
-add2Y: [ dup Y ] dip + withY ;
-add2X: [ dup X ] dip + withX ;
+add2Y: [ Y ] dip + swap withY ;
+add2X: [ X ] dip + swap withX ;
 
-topLeftCorner: origo canvasWidth -1 * 2 / withX canvasHeight -1 * 2 / withY ;
+halfWidth: canvasWidth 2 / ;
+negativeHalfWidth: halfWidth -1 * ;
+halfHeight: canvasHeight 2 / ;
+negativeHalfHeight: halfHeight -1 * ;
 
-fillBackground: topLeftCorner canvasWidth canvasHeight fillRect ;
+topLeftCorner:
+  []
+  negativeHalfWidth swappend
+  negativeHalfHeight swappend ;
 
-random2: dup [ - random * ] dip + ;
+
+fillBackground:
+  black fillStyle
+  topLeftCorner canvasWidth canvasHeight fillRect ;
+
 random25: -25 25 random2 ;
 
 calcNextControlPoint:
@@ -22,8 +32,12 @@ calcNextAlongCircle:
 circle:
   beginPath
   dup [ toCarth moveTo ] dip
-  [ dup Y 2 PI * 6 toRad - <= ]
-  [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ toCarth [ toCarth ] dip quadraticCurveTo ] dip ]
+  [ Y 2 PI * 6 toRad - <= ]
+  [
+    dup [ calcNextControlPoint ] dip
+    calcNextAlongCircle dup
+    [ toCarth [ toCarth ] dip quadraticCurveTo ] dip
+  ]
   while
   pop
   closePath ;
@@ -40,6 +54,6 @@ config:
 
 config
 fillBackground
-{ "x" 175 "y" 0 } circle tealStroke stroke
-{ "x" 125 "y" 0 } circle pinkStroke stroke
-{ "x" 150 "y" 0 } circle blueStroke stroke
+[175 0] circle tealStroke stroke [] unstack
+[125 0] circle pinkStroke stroke [] unstack
+[150 0] circle blueStroke stroke [] unstack

@@ -1,26 +1,30 @@
-Y: "y" get ;
-X: "x" get ;
-origo: { "x" 0 "y" 0 } ;
-withKey: swap make with ;
-withX: "x" withKey ;
-withY: "y" withKey ;
+Y: 1 at ;
+X: 0 at ;
+withX: 0 ins ;
+withY: 1 ins ;
 
 toCarthX:
-  dup Y [ X ] dip cos * ;
+  Y [ X ] dip cos * ;
 
 toCarthY:
-  dup Y [ X ] dip sin * ;
+  Y [ X ] dip sin * ;
 
-toCarth: origo [ dup toCarthX ] dip swap withX [ toCarthY ] dip swap withY ;
+toCarth:
+  toCarthX swap
+  toCarthY swap withY
+  withX ;
 
 toPolarR:
-  dup X dup * [ Y dup * ] dip sqrt ;
+  X dup * [ Y dup * ] dip + sqrt ;
 
 toPolarPhi:
-  dup Y [ X ] dip atan2 ;
+  Y [ X ] dip atan2 ;
 
-toPolar: origo [ dup toPolarR ] dip swap withX [ toPolarPhi ] dip swap withY ;
+toPolar:
+  toPolarR swap
+  toPolarPhi swap withY
+  withX ;
 
 toRad: 180 / PI * ;
 
-toDeg: PI / 180 * ;
+2deg: PI / 180 * ;

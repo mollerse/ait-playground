@@ -5,41 +5,55 @@ black: 0 0 0 hsl ;
 pink: "#d36fc8" ;
 blue: "#2347e6" ;
 
-Y: "y" get ;
-X: "x" get ;
-origo: { "x" 0 "y" 0 } ;
-withKey: swap make with ;
-withX: "x" withKey ;
-withY: "y" withKey ;
+Y: 1 at ;
+X: 0 at ;
+withX: 0 ins ;
+withY: 1 ins ;
 
 toCarthX:
-  dup Y [ X ] dip cos * ;
+  Y [ X ] dip cos * ;
 
 toCarthY:
-  dup Y [ X ] dip sin * ;
+  Y [ X ] dip sin * ;
 
-toCarth: origo [ dup toCarthX ] dip swap withX [ toCarthY ] dip swap withY ;
+toCarth:
+  toCarthX swap
+  toCarthY swap withY
+  withX ;
 
 toPolarR:
-  dup X dup * [ Y dup * ] dip sqrt ;
+  X dup * [ Y dup * ] dip + sqrt ;
 
 toPolarPhi:
-  dup Y [ X ] dip atan2 ;
+  Y [ X ] dip atan2 ;
 
-toPolar: origo [ dup toPolarR ] dip swap withX [ toPolarPhi ] dip swap withY ;
+toPolar:
+  toPolarR swap
+  toPolarPhi swap withY
+  withX ;
 
 toRad: 180 / PI * ;
 
 2deg: PI / 180 * ;
 
-add2Y: [ dup Y ] dip + withY ;
-add2X: [ dup X ] dip + withX ;
+add2Y: [ Y ] dip + swap withY ;
+add2X: [ X ] dip + swap withX ;
 
-topLeftCorner: origo canvasWidth -1 * 2 / withX canvasHeight -1 * 2 / withY ;
+halfWidth: canvasWidth 2 / ;
+negativeHalfWidth: halfWidth -1 * ;
+halfHeight: canvasHeight 2 / ;
+negativeHalfHeight: halfHeight -1 * ;
 
-fillBackground: topLeftCorner canvasWidth canvasHeight fillRect ;
+topLeftCorner:
+  []
+  negativeHalfWidth swappend
+  negativeHalfHeight swappend ;
 
-random2: dup [ - random * ] dip + ;
+
+fillBackground:
+  black fillStyle
+  topLeftCorner canvasWidth canvasHeight fillRect ;
+
 random25: -25 25 random2 ;
 
 calcNextControlPoint:
@@ -52,8 +66,12 @@ calcNextAlongCircle:
 circle:
   beginPath
   dup [ toCarth moveTo ] dip
-  [ dup Y 2 PI * 6 toRad - <= ]
-  [ dup [ calcNextControlPoint ] dip calcNextAlongCircle dup [ toCarth [ toCarth ] dip quadraticCurveTo ] dip ]
+  [ Y 2 PI * 6 toRad - <= ]
+  [
+    dup [ calcNextControlPoint ] dip
+    calcNextAlongCircle dup
+    [ toCarth [ toCarth ] dip quadraticCurveTo ] dip
+  ]
   while
   pop
   closePath ;
@@ -62,7 +80,7 @@ tealStroke: teal strokeStyle ;
 pinkStroke: pink strokeStyle ;
 blueStroke: blue strokeStyle ;
 
-animate: 30 rAF ;
+animate: 60 rAF ;
 
 config:
   canvasWidth 2 / canvasHeight 2 / translate
@@ -72,7 +90,7 @@ config:
 
 config
 [ fillBackground
-  { "x" 175 "y" 0 } circle tealStroke stroke unstack
-  { "x" 125 "y" 0 } circle pinkStroke stroke unstack
-  { "x" 150 "y" 0 } circle blueStroke stroke unstack ]
+  [175 0] circle tealStroke stroke [] unstack
+  [125 0] circle pinkStroke stroke [] unstack
+  [150 0] circle blueStroke stroke [] unstack ]
 animate

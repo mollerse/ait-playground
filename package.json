@@ -7,9 +7,9 @@
   "author": "Stian Møllersen",
   "license": "MIT",
   "dependencies": {
-    "ait-dom": "^0.1.0",
-    "ait-canvas": "^0.1.0",
-    "ait-lang": "^0.1.0"
+    "ait-canvas": "0.2.1",
+    "ait-dom": "0.2.0",
+    "ait-lang": "0.2.6"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
