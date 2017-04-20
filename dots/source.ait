@@ -1,35 +1,47 @@
-origo: { "x" 0 "y" 0 } ;
-withKey: swap make with ;
-Y: "y" get ;
-X: "x" get ;
-withX: "x" withKey ;
-withY: "y" withKey ;
-DY: "dy" get ;
-DX: "dx" get ;
-withDX: "dx" withKey ;
-withDY: "dy" withKey ;
-COLOR: "color" get ;
-withColor: "color" withKey ;
+X: 0 at ;
+Y: 1 at ;
+DX: 2 at ;
+DY: 3 at ;
+COLOR: 4 at ;
+withX: swap 0 ins ;
+withY: swap 1 ins ;
+withDX: swap 2 ins ;
+withDY: swap 3 ins ;
+withColor: swap 4 ins ;
 
-add2Y: [ dup Y ] dip + withY ;
-add2X: [ dup X ] dip + withX ;
+origo: [0 0] ;
+add2Y: [ Y ] dip + withY  ;
+add2X: [ X ] dip + withX ;
 
-topLeftCorner: origo canvasWidth -1 * 2 / withX canvasHeight -1 * 2 / withY ;
+halfWidth: canvasWidth 2 /;
+negativeHalfWidth: halfWidth -1 * ;
+halfHeight: canvasHeight 2 / ;
+negativeHalfHeight: halfHeight -1 * ;
 
-fillBackground: "black" fillStyle topLeftCorner canvasWidth canvasHeight fillRect ;
+topLeftCorner:
+  []
+  negativeHalfWidth swappend
+  negativeHalfHeight swappend ;
 
+fillBackground:
+  "black" fillStyle
+  topLeftCorner canvasWidth canvasHeight fillRect ;
 
-
-random2: dup [ - random * ] dip + ;
-randomWidth: canvasWidth -1 * 2 / canvasWidth 2 / random2 ;
+randomWidth: negativeHalfWidth halfWidth random2 ;
 randomVelocity: -2.5 2.5 random2 ;
 
 colorwheel: ["teal" "blue" "pink" "yellow"] ;
-randomColor: 0 colorwheel size random2 floor colorwheel at ;
+randomColor: 0 colorwheel size random2 floor colorwheel of [ pop ] dip ;
 
-randomPoint: origo randomWidth withX ;
-randomPointWithVelocity: randomPoint randomVelocity withDY randomVelocity withDX ;
-randomPointWithVelocityAndColor: randomPointWithVelocity randomColor withColor ;
+randomPoint: randomWidth [0] cons ;
+randomPointWithVelocity:
+  randomPoint
+  randomVelocity swappend
+  randomVelocity swappend ;
+
+randomPointWithVelocityAndColor:
+  randomPointWithVelocity
+  randomColor swappend ;
 
 dot:
   beginPath
@@ -41,18 +53,14 @@ smallDot: 1 dot ;
 smallRedDot: "red" fillStyle smallDot ;
 
 dots:
-  [] 0
-  [dup 500 <=]
-  [ [ randomPointWithVelocityAndColor swons ] dip 1 + ]
-  while
-  pop ;
+  []
+  500 [ randomPointWithVelocityAndColor swons ] times ;
 
 drawDots:
   dup
-  "red" strokeStyle
-  [ dup COLOR fillStyle smallDot ] step ;
+  [ COLOR fillStyle smallDot ] step ;
 
-moveDots: [ dup DY add2Y dup DX add2X ] map ;
+moveDots: [ DY add2Y DX add2X ] map ;
 
 config:
   canvasWidth 2 / canvasHeight 2 / translate

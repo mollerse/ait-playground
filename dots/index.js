@@ -21,7 +21,7 @@ const stopEval = document.createElement('button');
 stopEval.textContent = 'Stop';
 document.body.appendChild(stopEval);
 
-document.body.appendChild(runtime.canvas);
+document.body.appendChild(runtime.ctx.canvas);
 
 function interpret(source) {
   runtime.reset();
