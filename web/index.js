@@ -3,9 +3,9 @@ const fs = require('fs');
 const Browser = require('ait-lang/runtimes/browser');
 
 const runtime = Browser();
-runtime.load(require('ait-canvas'));
-runtime.load(require('ait-dom'));
-runtime.setCanvasDimensions(500, 500);
+Object.assign(runtime.lexicon, require('ait-canvas'));
+Object.assign(runtime.lexicon, require('ait-dom'));
+Object.assign(runtime.lexicon, require('ait-animation'));
 
 const source = document.createElement('textarea');
 source.setAttribute('rows', 50);
@@ -21,12 +21,21 @@ const stopEval = document.createElement('button');
 stopEval.textContent = 'Stop';
 document.body.appendChild(stopEval);
 
-document.body.appendChild(runtime.ctx.canvas);
+const canvasContainer = document.createElement('div');
+document.body.appendChild(canvasContainer);
+canvasContainer.innerHTML = '<div />';
 
 function interpret(source) {
   runtime.reset();
+  //TODO: Fix this
   runtime.evaluate(source);
+  const c = runtime.scope['__aitCanvasContext'].body.canvas;
+  canvasContainer.replaceChild(c, canvasContainer.firstChild);
 }
-
 doEval.addEventListener('click', () => interpret(source.value));
-stopEval.addEventListener('click', () => runtime.stopAnimations());
+
+function stopAnimations() {
+  runtime.program = [{ type: 'word', body: 'stopAnimations' }];
+  runtime.executeProgram();
+}
+stopEval.addEventListener('click', stopAnimations);

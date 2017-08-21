@@ -1,3 +1,6 @@
+"canvas" createElement canvasContext
+500 500 canvasDimensions
+
 hsl: "hsl(%s, %s%, %s%)" replace3 ;
 
 teal: 60 85 180 hsl ;
@@ -11,48 +14,60 @@ withX: 0 ins ;
 withY: 1 ins ;
 
 toCarthX:
-  Y [ X ] dip cos * ;
+  -> P
+  P X P Y cos * ;
 
 toCarthY:
-  Y [ X ] dip sin * ;
+  -> P
+  P X P Y sin * ;
 
 toCarth:
-  toCarthX swap
-  toCarthY swap withY
-  withX ;
+  -> P
+  P toCarthX
+  P toCarthY
+  P withY withX ;
 
 toPolarR:
-  X dup * [ Y dup * ] dip + sqrt ;
+  -> P
+  P X dup *
+  P Y dup *
+  + sqrt ;
 
 toPolarPhi:
-  Y [ X ] dip atan2 ;
+  -> P
+  P X P Y atan2 ;
 
 toPolar:
-  toPolarR swap
-  toPolarPhi swap withY
-  withX ;
+  -> P
+  P toPolarR
+  P toPolarPhi
+  P withY withX ;
 
 toRad: 180 / PI * ;
 
 2deg: PI / 180 * ;
 
-add2Y: [ Y ] dip + swap withY ;
-add2X: [ X ] dip + swap withX ;
+add2Y:
+  swap
+  -> P
+  P Y + P withY ;
+add2X:
+  swap
+  -> P
+  P X + P withX ;
 
-halfWidth: canvasWidth 2 / ;
-negativeHalfWidth: halfWidth -1 * ;
-halfHeight: canvasHeight 2 / ;
-negativeHalfHeight: halfHeight -1 * ;
-
-topLeftCorner:
-  []
-  negativeHalfWidth swappend
-  negativeHalfHeight swappend ;
-
+H: canvasHeight ;
+W: canvasWidth ;
+WMax: W 2 / ;
+WMin: WMax neg ;
+HMax: H 2 / ;
+HMin: HMax neg ;
+WindowMin: WMin HMin [] cons cons ;
+WindowMax: WMax HMax [] cons cons ;
 
 fillBackground:
   black fillStyle
-  topLeftCorner canvasWidth canvasHeight fillRect ;
+  WindowMin W H fillRect ;
 
 random25: -25 25 random2 ;
 
@@ -65,12 +80,12 @@ calcNextAlongCircle:
 
 circle:
   beginPath
-  dup [ toCarth moveTo ] dip
+  dup toCarth moveTo
   [ Y 2 PI * 6 toRad - <= ]
   [
-    dup [ calcNextControlPoint ] dip
+    dup [ calcNextControlPoint toCarth ] dip
     calcNextAlongCircle dup
-    [ toCarth [ toCarth ] dip quadraticCurveTo ] dip
+    [ toCarth quadraticCurveTo ] dip
   ]
   while
   pop
@@ -80,17 +95,16 @@ tealStroke: teal strokeStyle ;
 pinkStroke: pink strokeStyle ;
 blueStroke: blue strokeStyle ;
 
-animate: 60 rAF ;
-
 config:
-  canvasWidth 2 / canvasHeight 2 / translate
+  WMax HMax translate
   2.5 lineWidth
   0.5 globalAlpha
   black fillStyle ;
 
 config
+10
 [ fillBackground
   [175 0] circle tealStroke stroke [] unstack
   [125 0] circle pinkStroke stroke [] unstack
   [150 0] circle blueStroke stroke [] unstack ]
-animate
+times

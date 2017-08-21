@@ -1,47 +1,51 @@
-X: 0 at ;
-Y: 1 at ;
-DX: 2 at ;
-DY: 3 at ;
-COLOR: 4 at ;
-withX: swap 0 ins ;
-withY: swap 1 ins ;
-withDX: swap 2 ins ;
-withDY: swap 3 ins ;
-withColor: swap 4 ins ;
+"canvas" createElement canvasContext
+500 500 canvasDimensions
 
-origo: [0 0] ;
-add2Y: [ Y ] dip + withY  ;
-add2X: [ X ] dip + withX ;
+.X: 0 at ;
+.Y: 1 at ;
+.DX: 2 at ;
+.DY: 3 at ;
+.C: 4 at ;
+=X: 0 ins ;
+=Y: 1 ins ;
+=DX: 2 ins ;
+=DY: 3 ins ;
+=C: 4 ins ;
 
-halfWidth: canvasWidth 2 /;
-negativeHalfWidth: halfWidth -1 * ;
-halfHeight: canvasHeight 2 / ;
-negativeHalfHeight: halfHeight -1 * ;
+add2Y:
+  -> P
+  P .Y + P =Y ;
+add2X:
+  -> P
+  P .X + P =X ;
 
-topLeftCorner:
-  []
-  negativeHalfWidth swappend
-  negativeHalfHeight swappend ;
+point: [] cons cons ;
+
+W: canvasWidth ;
+H: canvasHeight ;
+WMax: W 2 / ;
+WMin: WMax neg ;
+HMax: H 2 / ;
+HMin: HMax neg ;
+WindowMin: WMin HMin point ;
 
 fillBackground:
   "black" fillStyle
-  topLeftCorner canvasWidth canvasHeight fillRect ;
+  WindowMin W H fillRect ;
 
-randomWidth: negativeHalfWidth halfWidth random2 ;
+randomWidth: WMin WMax random2 ;
 randomVelocity: -2.5 2.5 random2 ;
 
-colorwheel: ["teal" "blue" "pink" "yellow"] ;
-randomColor: 0 colorwheel size random2 floor colorwheel of [ pop ] dip ;
+colors: ["teal" "blue" "pink" "yellow"] ;
+takeRandom: dup size 0 swap random2 floor at ;
 
-randomPoint: randomWidth [0] cons ;
+randomPoint: randomWidth 0 point ;
 randomPointWithVelocity:
-  randomPoint
-  randomVelocity swappend
-  randomVelocity swappend ;
+  randomVelocity randomPoint =DX
+  randomVelocity swap =DY ;
 
 randomPointWithVelocityAndColor:
-  randomPointWithVelocity
-  randomColor swappend ;
+  colors takeRandom randomPointWithVelocity =C ;
 
 dot:
   beginPath
@@ -50,27 +54,24 @@ dot:
   closePath ;
 
 smallDot: 1 dot ;
-smallRedDot: "red" fillStyle smallDot ;
 
 dots:
   []
   500 [ randomPointWithVelocityAndColor swons ] times ;
 
-drawDots:
-  dup
-  [ COLOR fillStyle smallDot ] step ;
+moveDot:
+  dup .DY swap add2Y
+  dup .DX swap add2X ;
 
-moveDots: [ DY add2Y DX add2X ] map ;
+draw:
+  [ moveDot dup .C fillStyle smallDot ] step ;
 
-config:
-  canvasWidth 2 / canvasHeight 2 / translate
-  2.5 lineWidth
-  1 globalAlpha ;
+centerCanvas: WMax WMax translate ;
 
-animate: 60 rAF ;
-
-config
-dots
+centerCanvas
 fillBackground
+2.5 lineWidth
 0.25 globalAlpha
-[ drawDots moveDots ] animate
+
+dots -> Ds
+[ Ds draw ] 60 animate

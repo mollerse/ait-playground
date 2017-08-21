@@ -1,24 +1,32 @@
 @load ait-canvas ;
+@load ait-canvas/node ;
 @load ./trig ;
 @load ./colors ;
 
-add2Y: [ Y ] dip + swap withY ;
-add2X: [ X ] dip + swap withX ;
+nodeCanvas canvasContext
+500 500 canvasDimensions
 
-halfWidth: canvasWidth 2 / ;
-negativeHalfWidth: halfWidth -1 * ;
-halfHeight: canvasHeight 2 / ;
-negativeHalfHeight: halfHeight -1 * ;
+add2Y:
+  swap
+  -> P
+  P Y + P withY ;
+add2X:
+  swap
+  -> P
+  P X + P withX ;
 
-topLeftCorner:
-  []
-  negativeHalfWidth swappend
-  negativeHalfHeight swappend ;
-
+H: canvasHeight ;
+W: canvasWidth ;
+WMax: W 2 / ;
+WMin: WMax neg ;
+HMax: H 2 / ;
+HMin: HMax neg ;
+WindowMin: WMin HMin [] cons cons ;
+WindowMax: WMax HMax [] cons cons ;
 
 fillBackground:
   black fillStyle
-  topLeftCorner canvasWidth canvasHeight fillRect ;
+  WindowMin W H fillRect ;
 
 random25: -25 25 random2 ;
 
@@ -31,12 +39,12 @@ calcNextAlongCircle:
 
 circle:
   beginPath
-  dup [ toCarth moveTo ] dip
+  dup toCarth moveTo
   [ Y 2 PI * 6 toRad - <= ]
   [
-    dup [ calcNextControlPoint ] dip
+    dup [ calcNextControlPoint toCarth ] dip
     calcNextAlongCircle dup
-    [ toCarth [ toCarth ] dip quadraticCurveTo ] dip
+    [ toCarth quadraticCurveTo ] dip
   ]
   while
   pop
@@ -57,3 +65,5 @@ fillBackground
 [175 0] circle tealStroke stroke [] unstack
 [125 0] circle pinkStroke stroke [] unstack
 [150 0] circle blueStroke stroke [] unstack
+
+'squiggly.png' writeImage
