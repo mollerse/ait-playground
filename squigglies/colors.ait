@@ -1,4 +1,4 @@
-hsl: "hsl(%s, %s%, %s%)" replace3;
+hsl: "hsl(%s, %s%, %s%)" replace3 ;
 
 teal: 60 85 180 hsl ;
 black: 0 0 0 hsl ;

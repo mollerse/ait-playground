@@ -1,82 +1,80 @@
-X: 0 at ;
-Y: 1 at ;
-DY: 2 at ;
-SDY: 3 at ;
-.X: 0 ins ;
-.Y: 1 ins ;
-.DY: 2 ins ;
-.SDY: 3 ins ;
+@load ait-canvas ;
+@load ait-canvas/node ;
+@load ./point ;
 
-randomPointWithVelocity:
-  []
-  negativeHalfWidth halfWidth random2 swappend
-  -5 5 random2 swappend
-  -0.2 0.2 random2 swappend
-  0 swappend ;
+nodeCanvas canvasContext
+1680 1050 canvasDimensions
 
-halfWidth: canvasWidth 2 / ;
-negativeHalfWidth: halfWidth -1 * ;
-halfHeight: canvasHeight 2 / ;
-negativeHalfHeight: halfHeight -1 * ;
+H: canvasHeight ;
+W: canvasWidth ;
+WMax: W 2 / ;
+WMin: WMax neg ;
+HMax: H 2 / ;
+HMin: HMax neg ;
+WindowMin: WMin HMin [] cons cons ;
+WindowMax: WMax HMax [] cons cons ;
 
-topLeftCorner:
-  []
-  negativeHalfWidth swappend
-  negativeHalfHeight swappend ;
-
-randomFrom:
-  dup size 0 swap random2
-  floor
-  at
-  [ pop ] dip ;
+randomElement:
+  -> aggr
+  0 aggr size random2 floor
+  aggr of ;
 
 palette: [ "rgb(0,255,242)" "rgb(252,0,255)" "rgb(57,255,20)" ] ;
-randomColor : palette randomFrom ;
-
+randomColor : palette randomElement ;
 randomStroke: randomColor strokeStyle ;
-noFill: "none" fillStyle ;
 
+noFill: "none" fillStyle ;
 fillBackground:
   1 globalAlpha
-  "black" fillStyle
-  topLeftCorner canvasWidth canvasHeight fillRect ;
+  fillStyle
+  WindowMin W H fillRect ;
+
+
+randomPointWithVelocity:
+  [0 0 0 0]
+  WMin WMax random2 swap .X
+  -5 5 random2 swap .Y
+  -0.2 0.2 random2 swap .DY
+  0 swap .SDY ;
 
 points:
   []
   1000 [ randomPointWithVelocity swons ] times ;
 
-sortedPoints: points [ X ] sortBy ;
+sortedPoints: points 0 sortBy ;
 
 drawPoints:
+  -> points
   0.1 globalAlpha
   beginPath
-  first moveTo
-  dup [ lineTo ] step
-  stroke
-  closePath ;
-
-moveFirstPoint:
-  Y [ DY ] dip + swap .Y
-  DY swap .SDY ;
+  points first moveTo
+  points [ lineTo ] step
+  stroke ;
 
 movePoint:
-  [ [ size 0 == ] dip swap ]
-  [ ]
+  -> I
+  -> Ps
+  -> P
+  I 0 =
   [
-    [ last ] dip
-    [ SDY ] dip Y swap [ + ] dip .Y
-    [ SDY ] dip DY swap [ + ] dip .SDY
-    [ Y halfHeight 150 - > ] [ -0.2 0 random2 swap .DY ] [] ifte
-    [ Y negativeHalfHeight 150 + < ] [ 0 0.2 random2 swap .DY ] [] ifte
-    [ pop ] dip
+    P Y P DY +
+    P .Y pop
+    P DY
+    P .SDY pop
   ]
-  ifte
-  swappend ;
+  [
+    I pred Ps of -> Prev
+    P Y Prev SDY +
+    P .Y pop
+    P DY Prev SDY +
+    P .SDY pop
 
-movePoints:
-  first moveFirstPoint pop
-  [] [ movePoint ]
-  fold ;
+    P Y HMax 150 - > [ -0.2 0 random2 P .DY pop ] cond
+    P Y HMin 150 + < [ 0 0.2 random2 P .DY pop ] cond
+  ]
+  branch ;
+
+movePoints: [ _a _i movePoint ] step ;
 
 config:
   canvasWidth 2 / canvasHeight 2 / translate
@@ -85,9 +83,11 @@ config:
   0.1 lineWidth
   1 globalAlpha ;
 
-animate: 60 rAF ;
-
 config
 fillBackground
-sortedPoints
-[ drawPoints movePoints ] animate
+sortedPoints -> Ps
+200 [
+  Ps drawPoints
+  Ps movePoints
+] times
+"neon.png" writeImage

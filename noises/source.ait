@@ -1,0 +1,89 @@
+@load ait-canvas ;
+@load ait-canvas/node ;
+@load ./noise-ait.js ;
+
+point: [] cons cons ;
+
+W: canvasWidth ;
+H: canvasHeight ;
+normalizeW: W / ;
+normalizeH: H 2 / / ;
+randomH: W -2 / W 2 / random2;
+
+octavePerlin:
+  -> Y
+  -> X
+  0.5 -> Persistence
+
+  0 # Sum
+  0 # Max
+  4 # F
+  512 # A
+  10
+  [
+    -> A
+    -> F
+    -> Max
+    X F * Y F * perlin2 A * +
+    A Max +
+    F 2 *
+    A Persistence *
+  ]
+  times
+  pop pop
+  / ;
+
+noisyPoint:
+  -> Y
+  -> X
+  X normalizeW Y +
+  H 2 /
+  octavePerlin H 2 / 0.4 * * Y +
+  X swap point ;
+
+nodeCanvas
+canvasContext -> canvasCtx
+5000 5000 canvasDimensions
+
+"white" fillStyle
+[0 0] W H fillRect
+"#333" strokeStyle
+10 lineWidth
+
+random seedNoise
+
+0 H 2 / translate
+
+
+drawLine:
+  -> Y
+  beginPath
+  0 Y point moveTo
+  W 7 /
+  [ _i 7 * Y noisyPoint lineTo ]
+  times
+  W Y point lineTo
+  stroke
+;
+
+step: H 32 / ;
+start: 0 ;
+
+start step + drawLine
+start step 2 * + drawLine
+start step 3 * + drawLine
+start step 4 * + drawLine
+start step 5 * + drawLine
+start step 6 * + drawLine
+start step 7 * + drawLine
+start drawLine
+start step - drawLine
+start step 2 * - drawLine
+start step 3 * - drawLine
+start step 4 * - drawLine
+start step 5 * - drawLine
+start step 6 * - drawLine
+start step 7 * - drawLine
+
+
+"noises.png" writeImage

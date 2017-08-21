@@ -2,21 +2,29 @@
   "name": "ait-playground",
   "version": "1.0.0",
   "scripts": {
-    "local-example": "budo ./web/index.js -l -o --title \"Ait REPL\" -- -t brfs -t [ babelify --presets [ es2015 ] ]"
+    "dots": "budo ./dots/index.js -l -o --title \"Ait REPL\" -- -g uglifyify -t brfs -t [ babelify --presets [ es2015 ] ] -t envify -t uglifyify",
+    "web": "budo ./web/index.js -l -o --title \"Ait REPL\" -- -g uglifyify -t brfs -t [ babelify --presets [ es2015 ] ] -t envify -t uglifyify",
+    "squigglies": "ait-lang ./squigglies/source.ait",
+    "neon-glaciers": "ait-lang ./neon-glaciers/source.ait",
+    "noises": "ait-lang ./noises/source.ait"
   },
   "author": "Stian Møllersen",
   "license": "MIT",
   "dependencies": {
-    "ait-canvas": "0.2.1",
-    "ait-dom": "0.2.0",
-    "ait-lang": "0.2.6"
+    "ait-animation": "0.3.0",
+    "ait-canvas": "0.4.2",
+    "ait-dom": "0.3.0",
+    "ait-lang": "0.3.2",
+    "noisejs": "2.1.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",
     "babelify": "^7.3.0",
     "brfs": "^1.4.3",
     "browserify": "^13.0.1",
-    "budo": "^8.4.0"
+    "budo": "^8.4.0",
+    "envify": "4.1.0",
+    "uglifyify": "4.0.3"
   },
   "engines": {
     "node": ">=6.0.0"
